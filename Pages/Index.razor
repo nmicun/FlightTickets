@@ -1,0 +1,159 @@
+﻿@page "/"
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.DropDowns
+
+<h3>Passenger info:</h3>
+<div class="input-group mb-3">
+    <span class="input-group-text" id="basic-addon1">Your name:</span>
+    <input type="text" class="form-control" @bind="@Name" placeholder="" aria-label="Name" aria-describedby="basic-addon1">
+</div>
+<br />
+<h6>Select your birthday</h6>
+
+<div>
+    <SfCalendar TValue="DateTime" @bind-Value="@BirthDate"></SfCalendar>
+</div>
+<br />
+
+<SfComboBox Width="300px" TValue="string" TItem="CGender" @bind-Value="@GenCode" Placeholder="Select gender" DataSource="@Genders">
+    <ComboBoxFieldSettings Value="Code" Text="Type"></ComboBoxFieldSettings>
+</SfComboBox>
+
+<br />
+<br />
+
+<SfComboBox Width="300px" TValue="string" TItem="CDestination" @bind-Value="@DestCode" Placeholder="Select your destination" DataSource="@Destination">
+    <ComboBoxFieldSettings Value="Code" Text="Type"></ComboBoxFieldSettings>
+</SfComboBox>
+<br />
+<br />
+<SfComboBox Width="300px" TValue="string" TItem="CMeal" @bind-Value="@MealCode" Placeholder="Select your meal" DataSource="@Meals">
+    <ComboBoxFieldSettings Value="Code" Text="Type"></ComboBoxFieldSettings>
+</SfComboBox>
+<br />
+<br />
+<SfComboBox Width="300px" TValue="string" TItem="CClass" @bind-Value="@ClassCode" Placeholder="Select your class" DataSource="@CClasses">
+    <ComboBoxFieldSettings Value="Code" Text="Type"></ComboBoxFieldSettings>
+</SfComboBox>
+<br/>
+<br/>
+
+<button style="margin:20px" @onclick="@ispisi">Get a QR code</button>
+<h6>Pick up your QR code!</h6>
+<img src="@url"/>
+
+
+@code {
+
+    //new code
+
+
+    List<CGender> Genders = new List<CGender> {
+        new CGender() { Type="Male", Code="X" },
+        new CGender() { Type="Female", Code="Y" } };
+
+    List<CDestination> Destination = new List<CDestination> {
+        new CDestination() { Type="UK", Code="A" },
+        new CDestination() { Type="Europe", Code="B" },
+        new CDestination() { Type="Asia", Code="C" },
+        new CDestination() { Type="America", Code="D" } };
+
+    List<CMeal> Meals = new List<CMeal> {
+       new CMeal() { Type="Europian", Code="G" },
+        new CMeal() { Type="Asian", Code="H" },
+        new CMeal() { Type="Vegetarian", Code="K" } };
+
+    List<CClass> CClasses = new List<CClass> {
+        new CClass() { Type="First Class", Code="P" },
+        new CClass() { Type="Buisness", Code="Q" },
+        new CClass() { Type="Economy", Code="R" } };
+
+
+
+
+    public DateTime DateValue { get; set; } = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 10);
+    public DateTime BirthDate { get; set; }
+    public string Name { get; set; }
+    public Uri url { get; set; }
+
+    //
+    public class CGender
+    {
+        public string Type { get; set; }
+        public string Code { get; set; }
+
+    }
+
+    public class CDestination
+    {
+        public string Type { get; set; }
+        public string Code { get; set; }
+
+    }
+    public class CMeal
+    {
+        public string Type { get; set; }
+        public string Code { get; set; }
+
+    }
+
+    public class CClass
+    {
+        public string Type { get; set; }
+        public string Code { get; set; }
+
+    }
+
+
+    //for code
+
+    public string DestCode { get; set; }
+    public string GenCode { get; set; }
+    public string MealCode { get; set; }
+    public string ClassCode { get; set; }
+
+    public void ispisi()
+    {
+        var newcode = CreateCode();
+        url = new Uri("https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + newcode);
+        DestCode = "";
+        GenCode = "";
+        MealCode = "";
+        ClassCode = "";
+
+    }
+
+
+
+    public bool isChild(DateTime birth)
+    {
+        DateTime zeroTime = new DateTime(1, 1, 1);
+
+        DateTime a = DateTime.Now.Date;
+        DateTime b = birth.Date;
+
+        TimeSpan span = a - b;
+
+        int years = (zeroTime + span).Year - 1;
+
+        return years < 12;
+    }
+
+    public string CreateCode()
+    {
+        if (isChild(BirthDate))
+        {
+            GenCode = GenCode.ToLower();
+            MealCode = MealCode.ToLower();
+        }
+
+        if (DateTime.Now.Hour > 23 && DateTime.Now.Hour < 6)
+            DestCode = DestCode.ToLower();
+
+        return DestCode + GenCode + MealCode + ClassCode;
+    }
+
+
+
+
+}
