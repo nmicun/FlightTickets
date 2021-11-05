@@ -3,6 +3,7 @@
 @using Syncfusion.Blazor.DropDowns
 
 <h3>Passenger info:</h3>
+
 <div class="input-group mb-3">
     <span class="input-group-text" id="basic-addon1">Your name:</span>
     <input type="text" class="form-control" @bind="@Name" placeholder="" aria-label="Name" aria-describedby="basic-addon1">
@@ -36,6 +37,8 @@
     <ComboBoxFieldSettings Value="Code" Text="Type"></ComboBoxFieldSettings>
 </SfComboBox>
 <br/>
+<br/>
+<h5 style="color:red; font-weight:bold">@ErrMsg</h5>
 <br/>
 
 <button style="margin:20px" @onclick="@ispisi">Get a QR code</button>
@@ -75,6 +78,7 @@
     public DateTime BirthDate { get; set; }
     public string Name { get; set; }
     public Uri url { get; set; }
+    public string ErrMsg { get; set; }
 
     //
     public class CGender
@@ -114,13 +118,22 @@
 
     public void ispisi()
     {
-        var newcode = CreateCode();
-        url = new Uri("https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + newcode);
-        DestCode = "";
-        GenCode = "";
-        MealCode = "";
-        ClassCode = "";
-
+        ErrMsg = "";
+        if (DestCode == null || GenCode == null || MealCode == null || ClassCode == null)
+            ErrMsg = "Please fill in all fields!";
+        else
+        {
+            try
+            {
+                var newcode = CreateCode();
+                url = new Uri("https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + newcode);
+                DestCode = "";
+                GenCode = "";
+                MealCode = "";
+                ClassCode = "";
+            }
+            catch (Exception) { }
+        }
     }
 
 
